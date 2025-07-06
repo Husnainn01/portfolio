@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Aldrich } from "next/font/google";
 import "./globals.css";
-import Navbar from "../components/Navbar";
-import BackgroundProvider from "../components/BackgroundProvider";
+import { AuthProvider } from "../context/AuthContext";
 
 // Keep Inter as a fallback font
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
@@ -27,13 +26,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${aldrich.variable} font-aldrich bg-darkBlue text-white`}>
-        {/* Galaxy background for all pages */}
-        <BackgroundProvider />
-        <Navbar />
-        <main className="pt-20">
+      <body className={`${inter.variable} ${aldrich.variable} font-aldrich`}>
+        <AuthProvider>
           {children}
-        </main>
+        </AuthProvider>
       </body>
     </html>
   );

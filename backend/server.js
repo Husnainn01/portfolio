@@ -1,19 +1,40 @@
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
+const path = require('path');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// Middleware
-app.use(cors());
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB Connected'))
+  .catch(err => {
+    console.error('MongoDB Connection Error:', err);
+    process.exit(1);
+  });
+
+// CORS Configuration
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? process.env.FRONTEND_URL || 'https://yourdomain.com' 
+    : ['http://localhost:3000', 'http://localhost:3001'],
+  credentials: true
+}));
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
-app.get('/', (req, res) => {
-  res.send('Portfolio API is running');
-});
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/projects', require('./routes/projects'));
+app.use('/api/skills', require('./routes/skills'));
+app.use('/api/profile', require('./routes/profile'));
 
 // Contact form endpoint
 app.post('/api/contact', async (req, res) => {
@@ -63,6 +84,11 @@ app.post('/api/contact', async (req, res) => {
     console.error('Error sending email:', error);
     res.status(500).json({ error: 'Failed to send message', details: error.message });
   }
+});
+
+// Admin panel routes - Serve React app for admin routes
+app.get('/admin*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
 });
 
 // Start server

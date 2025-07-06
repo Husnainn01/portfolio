@@ -26,6 +26,7 @@ export default function Contact() {
   });
 
   const [activeField, setActiveField] = useState<string | null>(null);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
   // Reset success message after 5 seconds
   useEffect(() => {
@@ -101,7 +102,7 @@ export default function Contact() {
     setStatus({ submitted: false, submitting: true, error: false, message: '' });
 
     try {
-      const response = await axios.post('http://localhost:5001/api/contact', formData);
+      const response = await axios.post(`${API_URL}/api/contact`, formData);
       
       if (response.status === 200) {
         setStatus({
