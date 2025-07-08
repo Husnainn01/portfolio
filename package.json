@@ -9,8 +9,5 @@
     "dev": "cd frontend && npm run dev",
     "build": "cd frontend && npm run build",
     "start": "cd frontend && npm run start"
-  },
-  "dependencies": {
-    "next": "15.3.3"
   }
 } 
