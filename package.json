@@ -9,5 +9,8 @@
     "dev": "cd frontend && npm run dev",
     "build": "cd frontend && npm run build",
     "start": "cd frontend && npm run start"
+  },
+  "dependencies": {
+    "styled-jsx": "^5.1.7"
   }
-} 
+}
