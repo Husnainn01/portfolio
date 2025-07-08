@@ -39,10 +39,12 @@ export default function EditProject({ params }: ProjectParams) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [techInput, setTechInput] = useState('');
+  const [projectId, setProjectId] = useState<string>(''); // Add projectId state
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     category: '',
+    status: 'Live',
     tech: [] as string[],
     featured: false,
     demoUrl: '',
@@ -63,10 +65,12 @@ export default function EditProject({ params }: ProjectParams) {
         });
         
         const project = res.data;
+        setProjectId(project._id); // Store the project ID
         setFormData({
           title: project.title || '',
           description: project.description || '',
           category: project.category || '',
+          status: project.status || 'Live',
           tech: Array.isArray(project.tech) ? project.tech : [],
           featured: project.featured || false,
           demoUrl: project.demoUrl || '',
@@ -97,6 +101,10 @@ export default function EditProject({ params }: ProjectParams) {
 
   const handleSelectChange = (e: any) => {
     setFormData(prev => ({ ...prev, category: e.target.value }));
+  };
+
+  const handleStatusChange = (e: any) => {
+    setFormData(prev => ({ ...prev, status: e.target.value }));
   };
 
   const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -163,6 +171,7 @@ export default function EditProject({ params }: ProjectParams) {
       submitData.append('title', formData.title);
       submitData.append('description', formData.description);
       submitData.append('category', formData.category);
+      submitData.append('status', formData.status);
       submitData.append('tech', formData.tech.join(','));
       submitData.append('featured', String(formData.featured));
       
@@ -192,7 +201,7 @@ export default function EditProject({ params }: ProjectParams) {
       };
 
       const token = getCookie('token');
-      await axios.put(`${API_URL}/api/projects/${slug}`, submitData, {
+      await axios.put(`${API_URL}/api/projects/${projectId}`, submitData, {
         headers: {
           'x-auth-token': token,
           'Content-Type': 'multipart/form-data'
@@ -276,6 +285,23 @@ export default function EditProject({ params }: ProjectParams) {
                   {categories.map(category => (
                     <MenuItem key={category} value={category}>{category}</MenuItem>
                   ))}
+                </Select>
+              </FormControl>
+
+              <FormControl required fullWidth>
+                <InputLabel id="status-label">Status</InputLabel>
+                <Select
+                  labelId="status-label"
+                  id="status"
+                  value={formData.status}
+                  onChange={handleStatusChange}
+                  label="Status"
+                >
+                  <MenuItem value="Live">Live</MenuItem>
+                  <MenuItem value="In Development">In Development</MenuItem>
+                  <MenuItem value="Coming Soon">Coming Soon</MenuItem>
+                  <MenuItem value="Completed">Completed</MenuItem>
+                  <MenuItem value="On Hold">On Hold</MenuItem>
                 </Select>
               </FormControl>
             </Box>

@@ -97,7 +97,7 @@ exports.createProject = async (req, res) => {
   }
   
   try {
-    const { title, description, tech, demoUrl, githubUrl, category, featured, order } = req.body;
+    const { title, description, tech, demoUrl, githubUrl, category, status, featured, order } = req.body;
     
     // Generate a slug from the title
     const slug = createSlug(title);
@@ -115,6 +115,7 @@ exports.createProject = async (req, res) => {
       description,
       tech: tech.split(',').map(item => item.trim()),
       category,
+      status: status || 'Live',
       featured: featured === 'true',
       order: order || 0
     };
@@ -148,6 +149,14 @@ exports.createProject = async (req, res) => {
       }
     } else {
       console.log('⚠️ No file received in request');
+      
+      // For Live projects, image is required
+      if (projectData.status === 'Live') {
+        return res.status(400).json({ msg: 'Image is required for Live projects' });
+      }
+      
+      // For non-Live projects, set a placeholder or leave empty
+      projectData.image = '';
     }
     
     const project = new Project(projectData);
@@ -170,7 +179,7 @@ exports.updateProject = async (req, res) => {
   }
   
   try {
-    const { title, description, tech, demoUrl, githubUrl, category, featured, order } = req.body;
+    const { title, description, tech, demoUrl, githubUrl, category, status, featured, order } = req.body;
     
     // Find project
     let project = await Project.findById(req.params.id);
@@ -199,6 +208,7 @@ exports.updateProject = async (req, res) => {
     if (description) projectFields.description = description;
     if (tech) projectFields.tech = tech.split(',').map(item => item.trim());
     if (category) projectFields.category = category;
+    if (status) projectFields.status = status;
     if (featured !== undefined) projectFields.featured = featured === 'true';
     if (order !== undefined) projectFields.order = order;
     if (demoUrl) projectFields.demoUrl = demoUrl;
@@ -253,7 +263,7 @@ exports.deleteProject = async (req, res) => {
     }
     
     // Delete project
-    await Project.findByIdAndRemove(req.params.id);
+    await Project.findByIdAndDelete(req.params.id);
     
     res.json({ msg: 'Project removed' });
   } catch (err) {

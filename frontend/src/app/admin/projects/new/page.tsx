@@ -34,6 +34,7 @@ export default function NewProject() {
     title: '',
     description: '',
     category: '',
+    status: 'Live',
     tech: [] as string[],
     featured: false,
     demoUrl: '',
@@ -49,6 +50,10 @@ export default function NewProject() {
 
   const handleSelectChange = (e: any) => {
     setFormData(prev => ({ ...prev, category: e.target.value }));
+  };
+
+  const handleStatusChange = (e: any) => {
+    setFormData(prev => ({ ...prev, status: e.target.value }));
   };
 
   const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,8 +107,9 @@ export default function NewProject() {
     setLoading(true);
     setError('');
 
-    if (!imageFile) {
-      setError('Please select a project image');
+    // Only require image for Live projects
+    if (!imageFile && formData.status === 'Live') {
+      setError('Please select a project image for Live projects');
       setLoading(false);
       return;
     }
@@ -120,6 +126,7 @@ export default function NewProject() {
       submitData.append('title', formData.title);
       submitData.append('description', formData.description);
       submitData.append('category', formData.category);
+      submitData.append('status', formData.status);
       submitData.append('tech', formData.tech.join(','));
       submitData.append('featured', String(formData.featured));
       
@@ -131,7 +138,10 @@ export default function NewProject() {
         submitData.append('githubUrl', formData.githubUrl);
       }
       
-      submitData.append('image', imageFile);
+      // Only append image if it exists
+      if (imageFile) {
+        submitData.append('image', imageFile);
+      }
 
       // Helper function to get token from cookies
       const getCookie = (name: string): string | null => {
@@ -221,6 +231,23 @@ export default function NewProject() {
                   {categories.map(category => (
                     <MenuItem key={category} value={category}>{category}</MenuItem>
                   ))}
+                </Select>
+              </FormControl>
+
+              <FormControl required fullWidth>
+                <InputLabel id="status-label">Status</InputLabel>
+                <Select
+                  labelId="status-label"
+                  id="status"
+                  value={formData.status}
+                  onChange={handleStatusChange}
+                  label="Status"
+                >
+                  <MenuItem value="Live">Live</MenuItem>
+                  <MenuItem value="In Development">In Development</MenuItem>
+                  <MenuItem value="Coming Soon">Coming Soon</MenuItem>
+                  <MenuItem value="Completed">Completed</MenuItem>
+                  <MenuItem value="On Hold">On Hold</MenuItem>
                 </Select>
               </FormControl>
             </Box>

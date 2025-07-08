@@ -23,10 +23,10 @@ interface Skill {
 
 export default function Home() {
   const [profile, setProfile] = useState<Profile>({
-    name: 'John Doe',
+    name: '',
     title: 'Full Stack Developer',
     subtitle: 'Building exceptional digital experiences',
-    bio: 'I specialize in creating robust, scalable applications with modern tech stacks.'
+    bio: 'I specialize in creating robust, scalable applications with modern tech stacks. I am a full stack developer with a passion for building exceptional digital experiences.'
   });
   
   const [skills, setSkills] = useState<Skill[]>([]);

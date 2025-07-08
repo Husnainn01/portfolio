@@ -328,10 +328,20 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, apiUrl }) => 
           </div>
         )}
         
-        {/* Category Badge */}
-        <div className="absolute top-3 right-3 z-10">
+        {/* Category and Status Badges */}
+        <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
           <span className="bg-lightBlue/80 text-darkBlue text-xs font-medium px-2.5 py-1 rounded-full backdrop-blur-sm">
             {project.category}
+          </span>
+          <span className={`text-white text-xs font-medium px-2.5 py-1 rounded-full backdrop-blur-sm ${
+            project.status === 'Live' ? 'bg-green-600/80' :
+            project.status === 'In Development' ? 'bg-orange-600/80' :
+            project.status === 'Coming Soon' ? 'bg-blue-600/80' :
+            project.status === 'Completed' ? 'bg-purple-600/80' :
+            project.status === 'On Hold' ? 'bg-gray-600/80' :
+            'bg-green-600/80'
+          }`}>
+            {project.status || 'Live'}
           </span>
         </div>
       </div>

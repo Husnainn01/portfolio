@@ -22,7 +22,7 @@ const ProjectSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: true
+    required: false
   },
   cloudinaryId: {
     type: String
@@ -36,6 +36,11 @@ const ProjectSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true
+  },
+  status: {
+    type: String,
+    enum: ['Live', 'In Development', 'Coming Soon', 'Completed', 'On Hold'],
+    default: 'Live'
   },
   featured: {
     type: Boolean,

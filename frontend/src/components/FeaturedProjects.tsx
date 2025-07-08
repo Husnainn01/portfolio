@@ -17,6 +17,7 @@ export interface Project {
   demoUrl?: string;
   githubUrl?: string;
   category: string;
+  status?: string;
   featured: boolean;
 }
 
@@ -135,6 +136,21 @@ interface ProjectCardProps {
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, apiUrl }) => {
+  // Function to truncate description
+  const truncateDescription = (text: string, maxLength: number = 120) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength).trim() + '...';
+  };
+
+  // Helper function to ensure URL has proper protocol
+  const formatUrl = (url: string): string => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    return `https://${url}`;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -145,9 +161,19 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, apiUrl }) => 
     >
       {/* Project Image with Overlay */}
       <div className="relative h-48 overflow-hidden">
-        <div className="absolute top-2 right-2 z-10">
+        <div className="absolute top-2 right-2 z-10 flex flex-col gap-1">
           <span className="bg-blue/80 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
             {project.category}
+          </span>
+          <span className={`text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm ${
+            project.status === 'Live' ? 'bg-green-600/80' :
+            project.status === 'In Development' ? 'bg-orange-600/80' :
+            project.status === 'Coming Soon' ? 'bg-blue-600/80' :
+            project.status === 'Completed' ? 'bg-purple-600/80' :
+            project.status === 'On Hold' ? 'bg-gray-600/80' :
+            'bg-green-600/80'
+          }`}>
+            {project.status || 'Live'}
           </span>
         </div>
         
@@ -167,22 +193,33 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, apiUrl }) => 
                   target.style.display = 'none';
                   target.parentElement!.classList.add('bg-gradient-to-br', 'from-blue/40', 'to-lightBlue/20');
                   
-                  // Add emoji based on project title
+                  // Add emoji based on project status or title
                   const emoji = document.createElement('span');
                   emoji.className = 'text-4xl absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2';
-                  emoji.innerText = project.title.includes('Commerce') ? '🛒' : 
-                                 project.title.includes('Analytics') ? '📊' : 
-                                 project.title.includes('Fitness') ? '💪' : '💻';
+                  emoji.innerText = project.status === 'In Development' ? '🚧' :
+                                   project.status === 'Coming Soon' ? '⏳' :
+                                   project.status === 'On Hold' ? '⏸️' :
+                                   project.status === 'Completed' ? '✅' :
+                                   project.title.includes('Commerce') ? '🛒' : 
+                                   project.title.includes('Analytics') ? '📊' : 
+                                   project.title.includes('Fitness') ? '💪' : '💻';
                   target.parentElement!.appendChild(emoji);
                 }}
               />
             </div>
           ) : (
-            <div className="h-full w-full bg-gradient-to-br from-blue/40 to-lightBlue/20 flex items-center justify-center">
-              <span className="text-4xl">
-                {project.title.includes('Commerce') ? '🛒' : 
-                project.title.includes('Analytics') ? '📊' : 
-                project.title.includes('Fitness') ? '💪' : '💻'}
+            <div className="h-full w-full bg-gradient-to-br from-blue/40 to-lightBlue/20 flex flex-col items-center justify-center p-4">
+              <span className="text-3xl mb-2">
+                {project.status === 'In Development' ? '🚧' :
+                 project.status === 'Coming Soon' ? '⏳' :
+                 project.status === 'On Hold' ? '⏸️' :
+                 project.status === 'Completed' ? '✅' :
+                 project.title.includes('Commerce') ? '🛒' : 
+                 project.title.includes('Analytics') ? '📊' : 
+                 project.title.includes('Fitness') ? '💪' : '💻'}
+              </span>
+              <span className="text-xs text-white/80 text-center">
+                {project.status === 'Live' ? 'Preview Coming Soon' : project.status}
               </span>
             </div>
           )}
@@ -192,7 +229,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, apiUrl }) => 
       {/* Content */}
       <div className="p-6 flex-grow">
         <h3 className="text-xl font-bold text-white mb-2">{project.title}</h3>
-        <p className="text-white/70 mb-4 text-sm">{project.description}</p>
+        <p className="text-white/70 mb-4 text-sm leading-relaxed">{truncateDescription(project.description)}</p>
         
         <div className="mb-4">
           <h4 className="text-lightBlue text-xs uppercase tracking-wider mb-2 font-medium">Technologies</h4>
@@ -210,29 +247,43 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, apiUrl }) => 
       <div className="p-4 border-t border-lightBlue/20 mt-auto">
         <div className="flex justify-between items-center">
           <div className="flex space-x-3">
-            {project.githubUrl && (
+            {project.githubUrl ? (
               <a 
-                href={project.githubUrl} 
+                href={formatUrl(project.githubUrl)} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-white/80 hover:text-lightBlue transition-colors"
+                title="View Source Code"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
                 </svg>
               </a>
+            ) : (
+              <div className="text-white/40 cursor-not-allowed" title="Private Repository">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+                </svg>
+              </div>
             )}
-            {project.demoUrl && (
+            {project.demoUrl ? (
               <a 
-                href={project.demoUrl} 
+                href={formatUrl(project.demoUrl)} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-white/80 hover:text-lightBlue transition-colors"
+                title="View Live Demo"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
               </a>
+            ) : (
+              <div className="text-white/40 cursor-not-allowed" title="Demo Coming Soon">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
             )}
           </div>
           <Link href={`/projects/${project.slug}`}>
