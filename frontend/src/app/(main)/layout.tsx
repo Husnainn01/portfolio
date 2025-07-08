@@ -8,7 +8,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
       {/* Galaxy background for main website */}
       <BackgroundProvider />
       <Navbar />
-      <main className="pt-20 bg-darkBlue text-white min-h-screen">
+      <main className="pt-20 text-white min-h-screen relative z-10">
         {children}
       </main>
     </>
