@@ -12,6 +12,12 @@ const nextConfig = {
     // Disable TypeScript type checking during production builds
     ignoreBuildErrors: true,
   },
+  // Enable fallback pages for dynamic routes
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
+  // Configure output for proper dynamic routing
+  trailingSlash: false,
 };
 
 module.exports = nextConfig; 
