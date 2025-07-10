@@ -17,10 +17,16 @@ mongoose.connect(process.env.MONGO_URI)
   });
 
 // CORS Configuration
+const allowedOrigins = process.env.NODE_ENV === 'production' 
+  ? [
+      process.env.FRONTEND_URL || 'https://www.hus-nain.dev',
+      'https://www.hus-nain.dev',
+      'https://hus-nain.dev'
+    ]
+  : ['http://localhost:3000', 'http://localhost:3001'];
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL || 'https://yourdomain.com' 
-    : ['http://localhost:3000', 'http://localhost:3001'],
+  origin: allowedOrigins,
   credentials: true
 }));
 
