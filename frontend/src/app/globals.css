@@ -30,3 +30,36 @@ h1, h2, h3, h4, h5, h6 {
 * {
   box-sizing: border-box;
 }
+
+input, textarea, select {
+  color: #e6f1ff;
+  background: #19243a;
+  border: 1px solid #233554;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-family: inherit;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #64ffda;
+  box-shadow: 0 0 0 2px #64ffda33;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #a0aec0;
+  opacity: 1;
+}
+
+/* For dark mode, ensure background and text are still visible */
+@media (prefers-color-scheme: dark) {
+  input, textarea, select {
+    background: #19243a;
+    color: #e6f1ff;
+    border-color: #233554;
+  }
+  input::placeholder, textarea::placeholder {
+    color: #a0aec0;
+  }
+}
