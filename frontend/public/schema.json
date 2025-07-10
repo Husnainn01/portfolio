@@ -1,0 +1,16 @@
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Husnain Dev Portfolio",
+  "url": "https://www.hus-nain.dev/",
+  "description": "Portfolio website for Husnain Dev, a full stack developer specializing in robust, scalable digital experiences.",
+  "publisher": {
+    "@type": "Person",
+    "name": "Husnain Dev"
+  },
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://www.hus-nain.dev/projects?search={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+} 
